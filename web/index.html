@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CRIA 149번 작업 영상과 힘·토크를 대조하고 현장 사전 검토를 기록하는 데모.">
+  <title>CRIA 149 · 로봇 작업 현장 사전 검토</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="episode.js"></script>
+  <script defer src="chart.js"></script>
+  <script defer src="review.js"></script>
+</head>
+<body>
+  <main>
+    <nav class="page-tabs" aria-label="CRIA 분석 메뉴">
+      <a href="index.html" aria-current="page">현장 사전 검토</a>
+      <a href="live.html">실시간 탐지</a>
+    </nav>
+    <header>
+      <p class="context">CRIA 149 / 서랍 열기</p>
+      <h1>로봇 작업 현장 사전 검토</h1>
+      <p class="lead">저장된 Random Forest 점수를 영상과 함께 재생하고, 경보 시각부터 확인합니다.</p>
+    </header>
+
+    <dl class="result-summary" aria-label="CRIA 149번 결과 요약">
+      <div>
+        <dt>작업 이상 탐지</dt>
+        <dd>Random Forest가 9.80초에 첫 경보</dd>
+      </div>
+      <div>
+        <dt>현장 위험등급</dt>
+        <dd>현장 증빙 부족으로 판정 보류</dd>
+      </div>
+    </dl>
+
+    <section class="evidence" aria-label="영상 및 센서 기록">
+      <div class="camera">
+        <video id="video" controls playsinline preload="auto" poster="poster.jpg" aria-label="CRIA 149번 손목 카메라">
+          <source src="episode-149.mp4" type="video/mp4">
+        </video>
+        <p id="media-error" role="alert" hidden>영상을 재생하지 못했습니다. 함께 제공된 MP4 파일을 확인하세요.</p>
+        <div class="camera-caption">
+          <span>손목 카메라</span>
+          <div class="playback">
+            <button type="button" id="play">처음부터 재생</button>
+            <button type="button" id="alert-play">경보 직전부터 재생</button>
+          </div>
+        </div>
+      </div>
+      <div class="signals">
+        <div class="readout">
+          <div>
+            <p class="context">Random Forest · 경보 기준 0.36</p>
+            <h2 id="status" aria-live="polite">데이터 대기</h2>
+          </div>
+          <div class="time"><strong id="clock">0.00</strong><span>초</span></div>
+        </div>
+        <div class="legend"><span class="swatch"></span> 사람의 이상 주석 9.63–13.57초 <span id="value"></span></div>
+        <canvas id="score" role="img" aria-label="저장 점수와 경보 기준, 사람의 이상 주석 그래프"></canvas>
+        <div class="chart-head">
+          <span>센서 파형</span>
+          <label>센서축 <select id="axis" aria-label="센서축"></select></label>
+        </div>
+        <canvas id="wave" role="img" aria-label="영상과 같은 시각의 센서 파형"></canvas>
+        <label class="scrub">영상 시각 <input type="range" id="timeline" min="0" max="29.7" value="0" step="0.01"></label>
+        <div id="alerts" class="bookmarks" aria-label="경보 시각 바로가기"></div>
+      </div>
+    </section>
+
+    <section class="review" aria-labelledby="review-title">
+      <div>
+        <p class="context">실습 7 · 현장 조건 선택</p>
+        <h2 id="review-title">경보가 뜬 뒤 무엇을 확인할까?</h2>
+        <fieldset>
+          <legend>가상 작업장의 손 접근 조건</legend>
+          <label><input type="radio" name="condition" value="unknown" checked> 접근 미확인</label>
+          <label><input type="radio" name="condition" value="reachable"> 접근 가능</label>
+          <label><input type="radio" name="condition" value="separation_planned"> 물리적 차단 설계</label>
+        </fieldset>
+        <p class="first-check" id="first-check" aria-live="polite"></p>
+        <button type="button" id="download">검토 기록 내려받기 (.md)</button>
+      </div>
+      <div class="risk">
+        <p class="context">현장 위험등급</p>
+        <h2 id="risk-grade">판정 보류</h2>
+        <p id="risk-reason"></p>
+        <details>
+          <summary>현장에서 확보할 증빙 4가지</summary>
+          <dl id="evidence-list"></dl>
+        </details>
+      </div>
+    </section>
+
+    <details class="sfoa-criteria" id="sfoa">
+      <summary>SFOA 판단 기준 · 서랍 틈새의 손가락 끼임</summary>
+      <p>CRIA 149번의 9.80초 경보를 출발점으로, 아래 네 항목을 확인합니다.</p>
+      <dl>
+        <dt>S · 상해 심각도</dt>
+        <dd>끼임 위치와 센서 변화를 참고합니다. 손가락에 실제로 가해질 힘과 예상 부상은 현장에서 확인합니다.</dd>
+        <dt>F · 노출 빈도와 시간</dt>
+        <dd>걸림 해소와 정비 중 작업자가 틈새에 접근하는 횟수와 시간을 작업 기록에서 확인합니다.</dd>
+        <dt>O · 위험 사건 발생 가능성</dt>
+        <dd>손이 들어간 상태에서 서랍이 움직이거나 로봇이 다시 움직일 수 있는지 확인합니다.</dd>
+        <dt>A · 상해 회피·감소 가능성</dt>
+        <dd>손을 빼낼 공간과 시간을 확인합니다. 접근 시 정지를 채택했다면 정지 시간과 거리를 측정합니다.</dd>
+      </dl>
+      <p><strong>RI 등급 경계</strong> · 1–2 저위험 · 3–4 중위험 · 5–6 고위험</p>
+      <p><strong>149번 최종 RI</strong> · 판정 보류. 작업자 노출과 방호조치 검증 자료가 필요합니다.</p>
+      <p><a href="https://doc.safetics.io/docs/ra-est-eval/">출처 · 세이프틱스 SafetyDesigner 공개 가이드 4단계</a></p>
+    </details>
+
+    <footer>
+      영상·센서·정답 주석 <a href="https://huggingface.co/datasets/Joringell/CRIA/tree/main/articulated/pull_drawer">CRIA pull_drawer 149번</a>
+      (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, 화면 동기화 및 파형 가공)
+      · <a href="https://doc.safetics.io/docs/ra-est-eval/">SafetyDesigner 공개 가이드</a>
+    </footer>
+  </main>
+</body>
+</html>

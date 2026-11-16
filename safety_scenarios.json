@@ -1,0 +1,6 @@
+{
+  "unassessed": {"description":"CRIA 원본만 있는 상태", "S":null,"F":null,"O":null,"A":null},
+  "access_open": {"description":"가정: 막힌 서랍에 작업자 손이 매 주기 접근하며, 자동 동작 중 끼일 수 있고 손을 빼기 어렵다.", "S":3,"F":3,"O":3,"A":3},
+  "separated": {"description":"가정: 작업을 분리했지만 간헐적인 개입과 재기동 위험이 남아 있다고 가정한다.", "S":3,"F":2,"O":2,"A":2},
+  "guard_verified": {"description":"가정: 정상 자동 운전에서 물리적 격리와 접근 시 정지·재기동 방지 기능의 효과를 검증했다고 가정한다. 정비 모드는 별도 평가다.", "S":3,"F":1,"O":1,"A":1}
+}

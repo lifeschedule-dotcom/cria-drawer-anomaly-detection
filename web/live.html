@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CRIA 영상의 재생 시각에 맞춰 힘·토크 샘플에서 이상 점수를 계산하는 데모.">
+  <title>CRIA 149 · 실시간 탐지</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="live-model.js"></script>
+  <script defer src="live-sensor.js"></script>
+  <script defer src="chart.js"></script>
+  <script defer src="live-inference.js"></script>
+  <script defer src="live.js"></script>
+  <script defer src="input-source.js"></script>
+</head>
+<body>
+  <main>
+    <nav class="page-tabs" aria-label="CRIA 분석 메뉴">
+      <a href="index.html">현장 사전 검토</a>
+      <a href="live.html" aria-current="page">실시간 탐지</a>
+    </nav>
+    <header>
+      <h1>실시간 탐지</h1>
+    </header>
+    <section class="input-source" aria-labelledby="source-title">
+      <h2 id="source-title">센서를 연결해 주세요</h2>
+      <p>사용할 센서를 선택하세요. 장비 없이 확인하려면 CRIA 기록을 재생하세요.</p>
+      <div class="source-options" role="group" aria-label="입력 선택">
+        <button type="button" data-source="camera" aria-pressed="false" aria-controls="camera-input">카메라</button>
+        <button type="button" data-source="force" aria-pressed="false" aria-controls="force-input">힘·토크 센서</button>
+        <button type="button" data-source="replay" aria-pressed="false" aria-controls="replay-input">CRIA 기록 재생</button>
+      </div>
+    </section>
+    <section class="input-panel" id="camera-input" aria-labelledby="camera-input-title" hidden>
+      <h2 id="camera-input-title">카메라 연결</h2>
+      <p>브라우저에서 권한을 허용하면 카메라 영상을 미리 볼 수 있습니다.</p>
+      <div class="playback">
+        <button type="button" id="camera-connect">카메라 연결</button>
+        <button type="button" id="camera-disconnect" hidden>연결 해제</button>
+      </div>
+      <p id="camera-message" role="status"></p>
+      <video class="camera-preview" id="camera-preview" muted playsinline autoplay aria-label="연결한 카메라 미리보기" hidden></video>
+    </section>
+    <section class="input-panel" id="force-input" aria-labelledby="force-input-title" hidden>
+      <h2 id="force-input-title">힘·토크 센서 연결</h2>
+      <p><strong>기기 연결 설정 필요</strong> · 로봇이나 센서의 데이터 출력 방식에 맞춰 연결해야 합니다.</p>
+      <dl class="force-fields">
+        <dt>힘 (N)</dt><dd>Fx, Fy, Fz</dd>
+        <dt>토크 (N·m)</dt><dd>Tx, Ty, Tz</dd>
+        <dt>시간</dt><dd>센서 샘플 시각 · 카메라와 함께 쓸 때 영상과 맞추는 데 사용</dd>
+      </dl>
+      <p>장비 없이 모델 동작을 확인하려면 <strong>CRIA 기록 재생</strong>을 선택하세요.</p>
+    </section>
+    <div id="replay-input" hidden>
+    <p class="lead replay-intro">CRIA 149번의 영상과 기록된 힘·토크를 같은 시각에 재생합니다. 최근 약 1초의 센서값으로 이상 점수를 새로 계산합니다.</p>
+    <section class="evidence" aria-label="영상 및 실시간 센서 분석">
+      <div class="camera">
+        <video id="video" controls playsinline preload="auto" poster="poster.jpg" aria-label="CRIA 149번 손목 카메라">
+          <source src="episode-149.mp4" type="video/mp4">
+        </video>
+        <p id="media-error" role="alert" hidden>영상을 재생하지 못했습니다. 함께 제공된 MP4 파일을 확인하세요.</p>
+        <div class="camera-caption">
+          <span>손목 카메라</span>
+          <div class="playback">
+            <button type="button" id="live-reset">처음으로</button>
+            <button type="button" id="live-play">분석 시작</button>
+          </div>
+        </div>
+      </div>
+      <div class="signals">
+        <div class="readout">
+          <div>
+            <p class="context">Random Forest · 경보 기준 <span id="threshold">—</span></p>
+            <h2 id="status" aria-live="polite">센서 데이터 대기</h2>
+          </div>
+          <div class="time"><strong id="clock">0.00</strong><span>초</span></div>
+        </div>
+        <div class="legend">이번 재생에서 계산한 점수 <span id="value">—</span></div>
+        <canvas id="score" role="img" aria-label="실시간 이상 점수와 경보 기준 그래프"></canvas>
+        <div class="chart-head">
+          <span>센서 파형</span>
+          <label>센서축 <select id="axis" aria-label="센서축"></select></label>
+        </div>
+        <canvas id="wave" role="img" aria-label="영상과 같은 시각까지 받은 센서 파형"></canvas>
+        <div class="analysis-summary">
+          <span>수신 프레임 <strong id="frame-count">0</strong></span>
+          <span>점수를 계산한 구간 <strong id="score-count">0</strong></span>
+        </div>
+      </div>
+    </section>
+    <section class="live-review" aria-labelledby="alerts-title">
+      <h2 id="alerts-title">이번 재생에서 뜬 경보</h2>
+      <p id="no-alerts">경보가 뜨면 해당 시각이 여기에 표시됩니다.</p>
+      <ol id="live-alerts" class="alerts-list"></ol>
+    </section>
+    </div>
+    <footer>
+      기록 재생으로 센서 입력을 재현합니다. 힘·토크가 모델의 입력이며 영상은 경보 시각의 동작을 보여줍니다.
+      · <a href="index.html#sfoa">SFOA 판단 기준</a>
+      <br>영상과 센서 <a href="https://huggingface.co/datasets/Joringell/CRIA/tree/main/articulated/pull_drawer">CRIA pull_drawer 149번</a>
+      (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, 화면 동기화 및 파형 가공)
+    </footer>
+  </main>
+</body>
+</html>
