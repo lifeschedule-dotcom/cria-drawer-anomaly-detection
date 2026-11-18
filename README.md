@@ -1,5 +1,7 @@
 # 로봇팔 작업 이상 탐지와 위험성평가 — CRIA 서랍 열기
 
+[웹 데모 열기](https://lifeschedule-dotcom.github.io/cria-drawer-anomaly-detection/) · 설치 없이 CRIA 149번 영상과 센서 경보를 확인할 수 있다.
+
 공개 데이터셋으로 로봇팔의 서랍 열기 동작을 분석한다. 힘·토크에서 이상 구간을 찾아 같은 시각의 영상과 대조한다. 그다음 손 끼임을 가상 위험 상황으로 두고, 실제 평가에 필요한 현장 증빙을 정리한다.
 
 **149번 작업은 서랍 열기에 성공했다.** 사람이 이상으로 표시한 구간은 9.63–13.57초다. Random Forest는 9.80초에 첫 경보를 냈고, 주석 밖인 23.30초에도 경보를 냈다. 현장 위험등급은 작업자 노출과 방호조치 증빙이 필요해 판정 보류다.
@@ -50,3 +52,4 @@ python -m http.server 8000 --directory web
 ## 출처
 
 센서값, 영상 및 주석의 원본은 Yi Qiao, Maolin Zheng, Haoran Sun, Lujia Dong, Wenzhao Lian의 [Joringell/CRIA](https://huggingface.co/datasets/Joringell/CRIA)이며 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)으로 배포된다. `articulated/pull_drawer` 데이터로 그래프와 이상 점수를 만들었다. 발표 자료의 149번 영상에는 자막과 사람이 표시한 이상 구간을 덧입혔다. 위험성평가 항목과 발표 자료의 기준표는 [세이프틱스 SafetyDesigner 공개 가이드](https://doc.safetics.io/docs/ra-est-eval/)를 참고했다. [세부 출처](THIRD_PARTY_NOTICES.md)
+
